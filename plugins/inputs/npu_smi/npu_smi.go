@@ -87,7 +87,7 @@ func (smi *NpuSMI) binPath() string {
 
 func (smi *NpuSMI) command(args ...string) ([]byte, error) {
 	hostMountPrefix := os.Getenv("HOST_MOUNT_PREFIX")
-	cmds := append([]string{smi.binPath(), "info"}, args...)
+	cmds := append([]string{smi.BinPath, "info"}, args...)
 	if len(hostMountPrefix) > 0 {
 		cmds = append([]string{"chroot", hostMountPrefix}, cmds...)
 	}
