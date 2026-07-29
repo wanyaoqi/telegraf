@@ -86,8 +86,12 @@ func (smi *NpuSMI) binPath() string {
 }
 
 func (smi *NpuSMI) command(args ...string) ([]byte, error) {
-	cmdArgs := append([]string{"info"}, args...)
-	cmd := execCommand(smi.binPath(), cmdArgs...)
+	hostMountPrefix := os.Getenv("HOST_MOUNT_PREFIX")
+	cmds := append([]string{smi.binPath(), "info"}, args...)
+	if len(hostMountPrefix) > 0 {
+		cmds = append([]string{"chroot", hostMountPrefix}, cmds...)
+	}
+	cmd := execCommand(cmds[0], cmds[1:]...)
 	out, err := internal.CombinedOutputTimeout(cmd, time.Duration(smi.Timeout))
 	if err != nil {
 		return nil, fmt.Errorf("failed to run command %q: %w - %s", strings.Join(cmd.Args, " "), err, string(out))
